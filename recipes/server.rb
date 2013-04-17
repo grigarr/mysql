@@ -198,6 +198,11 @@ unless platform_family?(%w{mac_os_x})
       subscribes :run, resources("template[#{grants_path}]"), :immediately
     end
   end
+  execute "mysql-remove-initial-iblogfile" do
+    command "rm -rf #{node['mysql']['data_dir']}/ib_logfile*"
+    action :nothing
+    subscribes :run, "execute[mysql-install-privileges]", :immediately
+  end
 
   template "#{node['mysql']['conf_dir']}/my.cnf" do
     source "my.cnf.erb"
