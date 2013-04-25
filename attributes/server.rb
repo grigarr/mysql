@@ -38,13 +38,8 @@ when "debian"
   default['mysql']['old_passwords']               = 0
   default['mysql']['grants_path']                 = "/etc/mysql/grants.sql"
 when "rhel", "fedora"
-  if node["mysql"]["version"].to_f >= 5.5
-    default['mysql']['service_name']            = "mysql"
-    default['mysql']['pid_file']                = "/var/run/mysql/mysql.pid"
-  else
-    default['mysql']['service_name']            = "mysqld"
-    default['mysql']['pid_file']                = "/var/run/mysqld/mysqld.pid"
-  end
+  default['mysql']['service_name']            = "mysql"
+  default['mysql']['pid_file']                = "/var/run/mysql/mysql.pid"
   default['mysql']['server']['packages']      = %w{Percona-Server-shared-55 Percona-Server-server-55 percona-toolkit percona-xtrabackup}
   default['mysql']['basedir']                 = "/usr"
   default['mysql']['data_dir']                = "/var/lib/mysql"
@@ -134,7 +129,7 @@ if attribute?('ec2')
   default['mysql']['ebs_vol_size'] = 50
 end
 
-default['mysql']['reload_action'] = "restart" # or "reload" or "none"
+default['mysql']['reload_action'] = "none" # or "reload" or "none"
 
 default['mysql']['use_upstart'] = node['platform'] == "ubuntu" && node['platform_version'].to_f >= 10.04
 
