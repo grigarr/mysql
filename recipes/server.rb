@@ -75,9 +75,23 @@ end
 
 unless platform_family?(%w{mac_os_x})
 
+  unless platform?(%w{windows})
+    group "mysql" do
+      action :create
+      gid 400
+    end
+
+    user "mysql" do
+      action :create
+      uid 400
+      gid "mysql"
+      home "/var/lib/mysql"
+      shell "/bin/bash"
+    end
+  end
+
   [File.dirname(node['mysql']['pid_file']),
     File.dirname(node['mysql']['tunable']['slow_query_log']),
-    node['mysql']['conf_dir'],
     node['mysql']['confd_dir'],
     node['mysql']['log_dir'],
     node['mysql']['data_dir']].each do |directory_path|
@@ -183,7 +197,7 @@ end
 execute "assign-root-password" do
   command "\"#{node['mysql']['mysqladmin_bin']}\" -u root password \"#{node['mysql']['server_root_password']}\""
   action :run
-  only_if "\"#{node['mysql']['mysql_bin']}\" -u root -e 'show databases;'"
+  only_if "\"#{node['mysql']['mysql_bin']}\" -u root --password='' -e 'show databases;'"
 end
 
 unless platform_family?(%w{mac_os_x})
